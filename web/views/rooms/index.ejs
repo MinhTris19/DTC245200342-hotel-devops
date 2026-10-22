@@ -1,0 +1,61 @@
+<%- include('../partials/header') %>
+<section class="hero">
+  <h1>Trải Nghiệm Nghỉ Dưỡng Đẳng Cấp</h1>
+  <p>Khách sạn Ánh Dương mang đến không gian sang trọng, dịch vụ 5 sao cùng tầm nhìn tuyệt mỹ.</p>
+</section>
+
+<form action="/search" method="GET" class="search-box">
+  <div class="form-group">
+    <label for="check_in">Ngày Nhận Phòng</label>
+    <input type="date" id="check_in" name="check_in" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label for="check_out">Ngày Trả Phòng</label>
+    <input type="date" id="check_out" name="check_out" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label for="guests">Số Khách</label>
+    <select id="guests" name="guests" class="form-control">
+      <option value="1">1 Khách</option>
+      <option value="2" selected>2 Khách</option>
+      <option value="3">3 Khách</option>
+      <option value="4">4 Khách</option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary">Tìm Phòng Trống</button>
+</form>
+
+<h2 style="margin-bottom: 1.5rem; font-weight: 800;">Các Hạng Phòng Khách Sạn</h2>
+<div class="room-grid">
+  <% roomTypes.forEach(rt => { %>
+    <div class="room-card">
+      <img src="<%= rt.image_path %>" alt="<%= rt.name %>" class="room-image">
+      <div class="room-content">
+        <h3 class="room-title"><%= rt.name %></h3>
+        <p class="room-desc"><%= rt.description %></p>
+        <div class="room-amenities">
+          <% (rt.amenities || '').split(',').forEach(a => { %>
+            <span class="amenity-tag"><%= a.trim() %></span>
+          <% }) %>
+        </div>
+        <div class="room-footer">
+          <div class="room-price">
+            <%= Number(rt.base_price).toLocaleString('vi-VN') %> đ<span>/đêm</span>
+          </div>
+          <a href="/bookings/create?room_type_id=<%= rt.id %>" class="btn btn-primary btn-sm">Đặt Phòng Ngay</a>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<script>
+  // Set default dates
+  const today = new Date().toISOString().split('T')[0];
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+  document.getElementById('check_in').min = today;
+  document.getElementById('check_in').value = today;
+  document.getElementById('check_out').min = tomorrow;
+  document.getElementById('check_out').value = tomorrow;
+</script>
+<%- include('../partials/footer') %>

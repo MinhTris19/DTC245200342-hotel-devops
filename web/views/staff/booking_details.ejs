@@ -1,0 +1,140 @@
+<%- include('../partials/header') %>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+  <h2>Chi Tiết Đơn Đặt Phòng: #<%= booking.booking_code %></h2>
+  <div>
+    <span class="badge badge-<%= booking.status %>" style="font-size: 1rem; padding: 0.5rem 1rem;"><%= booking.status %></span>
+  </div>
+</div>
+
+<% if (success) { %><div class="alert alert-success"><%= success %></div><% } %>
+<% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+  <div>
+    <div class="card">
+      <h3 style="margin-bottom: 1rem;">Thông Tin Khách Hàng & Phòng</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div><strong>Khách hàng:</strong> <%= booking.full_name %></div>
+        <div><strong>Số điện thoại:</strong> <%= booking.phone || '-' %></div>
+        <div><strong>Hạng phòng:</strong> <%= booking.room_type_name %></div>
+        <div><strong>Số phòng:</strong> Phòng <%= booking.room_number %></div>
+        <div><strong>Ngày nhận:</strong> <%= new Date(booking.check_in_date).toLocaleDateString('vi-VN') %></div>
+        <div><strong>Ngày trả:</strong> <%= new Date(booking.check_out_date).toLocaleDateString('vi-VN') %></div>
+        <div><strong>Số đêm:</strong> <%= booking.nights %> đêm</div>
+        <div><strong>Giá phòng:</strong> <%= Number(booking.price_per_night).toLocaleString('vi-VN') %> đ / đêm</div>
+      </div>
+      <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+        <strong>Tiền phòng cơ bản:</strong> <span style="font-size: 1.25rem; font-weight: 800; color: var(--primary);"><%= Number(booking.total_amount).toLocaleString('vi-VN') %> đ</span>
+      </div>
+    </div>
+
+    <!-- Dịch vụ phát sinh -->
+    <div class="card">
+      <h3 style="margin-bottom: 1rem;">Dịch Vụ Phát Sinh Đã Sử Dụng</h3>
+      <table class="table" style="margin-bottom: 1.5rem;">
+        <thead>
+          <tr>
+            <th>Tên Dịch Vụ</th>
+            <th>Số Lượng</th>
+            <th>Đơn Giá</th>
+            <th>Thành Tiền</th>
+            <th>Thao Tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% let totalServices = 0; %>
+          <% if (bookingServices.length === 0) { %>
+            <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Chưa có dịch vụ phát sinh nào.</td></tr>
+          <% } %>
+          <% bookingServices.forEach(s => { %>
+            <% totalServices += s.quantity * parseFloat(s.unit_price); %>
+            <tr>
+              <td><%= s.name %></td>
+              <td><%= s.quantity %></td>
+              <td><%= Number(s.unit_price).toLocaleString('vi-VN') %> đ</td>
+              <td><strong><%= Number(s.quantity * s.unit_price).toLocaleString('vi-VN') %> đ</strong></td>
+              <td>
+                <% if (booking.status === 'checked_in') { %>
+                  <form action="/staff/bookings/<%= booking.id %>/services/<%= s.id %>/delete" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                  </form>
+                <% } else { %> - <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <% if (booking.status === 'checked_in') { %>
+        <form action="/staff/bookings/<%= booking.id %>/services" method="POST" style="display: flex; gap: 1rem; align-items: flex-end; background: #f8fafc; padding: 1rem; border-radius: 8px;">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <div class="form-group" style="flex: 2;">
+            <label>Chọn Dịch Vụ Cần Thêm</label>
+            <select name="service_id" class="form-control" required>
+              <% availableServices.forEach(srv => { %>
+                <option value="<%= srv.id %>"><%= srv.name %> - <%= Number(srv.price).toLocaleString('vi-VN') %> đ</option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label>Số Lượng</label>
+            <input type="number" name="quantity" value="1" min="1" max="10" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Thêm Dịch Vụ</button>
+        </form>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Cột Thanh toán & Check-out -->
+  <div>
+    <div class="card">
+      <h3 style="margin-bottom: 1rem;">Thanh Toán & Check-out</h3>
+      <% 
+        const roomTotal = parseFloat(booking.total_amount);
+        const grandTotal = roomTotal + totalServices;
+      %>
+      <div style="background: var(--bg-main); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+          <span>Tiền phòng:</span>
+          <span><%= Number(roomTotal).toLocaleString('vi-VN') %> đ</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+          <span>Tiền dịch vụ:</span>
+          <span><%= Number(totalServices).toLocaleString('vi-VN') %> đ</span>
+        </div>
+        <hr style="border: 0; border-top: 1px solid var(--border); margin: 0.75rem 0;">
+        <div style="display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: 800; color: var(--primary);">
+          <span>Tổng Cộng:</span>
+          <span><%= Number(grandTotal).toLocaleString('vi-VN') %> đ</span>
+        </div>
+      </div>
+
+      <% if (booking.status === 'checked_in') { %>
+        <form action="/staff/bookings/<%= booking.id %>/checkout" method="POST">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Hình Thức Thanh Toán</label>
+            <select name="method" class="form-control" required>
+              <option value="cash">Tiền Mặt (Cash)</option>
+              <option value="card">Thẻ Ngân Hàng (POS)</option>
+              <option value="qr">Chuyển Khoản QR Code</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label>Số Tiền Khách Đưa (VND)</label>
+            <input type="number" name="amount_paid" value="<%= grandTotal %>" min="<%= grandTotal %>" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-success" style="width: 100%; font-size: 1.1rem; padding: 0.85rem;">Xác Nhận Thanh Toán & Check-out</button>
+        </form>
+      <% } else if (booking.status === 'checked_out') { %>
+        <div class="alert alert-success">Đơn này đã được thanh toán và check-out hoàn tất.</div>
+        <a href="/staff/bookings/<%= booking.id %>/invoice" class="btn btn-outline" style="width: 100%; text-align: center;">Xem & In Hóa Đơn</a>
+      <% } else { %>
+        <p style="color: var(--text-muted);">Khách hàng cần thực hiện Check-in trước khi có thể tính tiền và check-out.</p>
+      <% } %>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

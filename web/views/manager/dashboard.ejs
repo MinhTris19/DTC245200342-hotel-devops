@@ -1,0 +1,89 @@
+<%- include('../partials/header') %>
+<h2 style="margin-bottom: 1.5rem; font-weight: 800;">Báo Cáo Quản Lý & Dashboard KPI</h2>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">Doanh Thu Hôm Nay</div>
+    <div class="kpi-value" style="color: var(--primary);"><%= Number(revenueToday).toLocaleString('vi-VN') %> đ</div>
+    <div class="kpi-sub">Ghi nhận từ các hóa đơn đã thanh toán</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Công Suất Phòng Hôm Nay</div>
+    <div class="kpi-value"><%= occupancyRate %>%</div>
+    <div class="kpi-sub"><%= occupiedRooms %> / <%= totalUsableRooms %> phòng đang có khách</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Lượt Check-in / Out Hôm Nay</div>
+    <div class="kpi-value"><%= checkinToday %> / <%= checkoutToday %></div>
+    <div class="kpi-sub">Lượt nhận và trả phòng trong ngày</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Đặt Phòng Sắp Tới (7 ngày)</div>
+    <div class="kpi-value" style="color: var(--accent);"><%= upcoming7days %></div>
+    <div class="kpi-sub">Đơn đã xác nhận và giữ phòng</div>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+  <!-- Biểu đồ Doanh Thu -->
+  <div class="card">
+    <h3 style="margin-bottom: 1rem;">Doanh Thu 7 Ngày Gần Nhất</h3>
+    <div class="chart-container">
+      <% 
+        let maxVal = Math.max(...dailyRevenue.map(d => parseFloat(d.total)), 1000000);
+      %>
+      <% dailyRevenue.forEach(d => { %>
+        <% const h = Math.round((parseFloat(d.total) / maxVal) * 100); %>
+        <div class="chart-bar-wrap">
+          <div style="font-size: 0.75rem; margin-bottom: 0.25rem;"><%= Number(d.total / 1000).toFixed(0) %>k</div>
+          <div class="chart-bar" style="height: <%= Math.max(h, 4) %>%;"></div>
+          <div class="chart-bar-label"><%= d.date_label %></div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- Top Loại Phòng -->
+  <div class="card">
+    <h3 style="margin-bottom: 1rem;">Top Hạng Phòng Được Đặt</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Loại Phòng</th>
+          <th style="text-align: right;">Lượt Đặt</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% topRooms.forEach(r => { %>
+          <tr>
+            <td><%= r.name %></td>
+            <td style="text-align: right;"><strong><%= r.booking_count %></strong></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="margin-bottom: 1rem;">Top Dịch Vụ Phát Sinh Được Sử Dụng Nhiều Nhất</h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Tên Dịch Vụ</th>
+        <th>Tổng Lượt Dùng</th>
+        <th style="text-align: right;">Tổng Doanh Thu Dịch Vụ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% topServices.forEach(s => { %>
+        <tr>
+          <td><strong><%= s.name %></strong></td>
+          <td><%= s.total_used %> lượt</td>
+          <td style="text-align: right; color: var(--primary);"><strong><%= Number(s.total_revenue).toLocaleString('vi-VN') %> đ</strong></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/footer') %>

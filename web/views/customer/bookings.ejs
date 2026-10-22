@@ -1,0 +1,51 @@
+<%- include('../partials/header') %>
+<h2 style="margin-bottom: 1.5rem; font-weight: 800;">Lịch Sử Đặt Phòng Của Bạn</h2>
+
+<% if (success) { %><div class="alert alert-success"><%= success %></div><% } %>
+<% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
+
+<div class="card" style="padding: 0; overflow: hidden;">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Mã Đơn</th>
+          <th>Loại Phòng</th>
+          <th>Phòng</th>
+          <th>Nhận / Trả</th>
+          <th>Số Đêm</th>
+          <th>Tổng Tiền</th>
+          <th>Trạng Thái</th>
+          <th>Thao Tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (bookings.length === 0) { %>
+          <tr><td colspan="8" style="text-align: center; padding: 2rem;">Bạn chưa có đặt phòng nào.</td></tr>
+        <% } %>
+        <% bookings.forEach(b => { %>
+          <tr>
+            <td><strong><%= b.booking_code %></strong></td>
+            <td><%= b.room_type_name %></td>
+            <td>Phòng <%= b.room_number %></td>
+            <td><%= new Date(b.check_in_date).toLocaleDateString('vi-VN') %> &rarr; <%= new Date(b.check_out_date).toLocaleDateString('vi-VN') %></td>
+            <td><%= b.nights %> đêm</td>
+            <td><strong style="color: var(--primary);"><%= Number(b.total_amount).toLocaleString('vi-VN') %> đ</strong></td>
+            <td><span class="badge badge-<%= b.status %>"><%= b.status %></span></td>
+            <td>
+              <% if (['pending', 'confirmed'].includes(b.status)) { %>
+                <form action="/bookings/<%= b.id %>/cancel" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đặt phòng này?');">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <button type="submit" class="btn btn-danger btn-sm">Hủy Đơn</button>
+                </form>
+              <% } else { %>
+                <span style="color: var(--text-muted); font-size: 0.85rem;">Không thể hủy</span>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<%- include('../partials/footer') %>

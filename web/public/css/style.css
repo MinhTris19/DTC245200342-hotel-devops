@@ -1,0 +1,296 @@
+/* Modern Premium CSS for Hotel Booking System */
+:root {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-light: #eff6ff;
+  --secondary: #0f172a;
+  --accent: #f59e0b;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --bg-main: #f8fafc;
+  --card-bg: #ffffff;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --radius: 12px;
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.navbar {
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+}
+.brand {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none !important;
+}
+.brand span { color: var(--primary); }
+.nav-links { display: flex; align-items: center; gap: 1.25rem; list-style: none; }
+.nav-links a {
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.nav-links a:hover, .nav-links a.active {
+  background: var(--primary-light);
+  color: var(--primary);
+  text-decoration: none;
+}
+.role-badge {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: var(--primary);
+  color: white;
+  font-weight: 700;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  flex: 1;
+}
+
+.hero {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: white;
+  padding: 3.5rem 2rem;
+  border-radius: var(--radius);
+  text-align: center;
+  margin-bottom: 2.5rem;
+  box-shadow: var(--shadow-lg);
+}
+.hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.75rem; }
+.hero p { font-size: 1.15rem; color: #94a3b8; max-width: 600px; margin: 0 auto 2rem; }
+
+.search-box {
+  background: white;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) auto;
+  gap: 1rem;
+  align-items: end;
+  max-width: 1000px;
+  margin: -3rem auto 2.5rem;
+  position: relative;
+  z-index: 10;
+  border: 1px solid var(--border);
+}
+.form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+.form-group label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+.form-control {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+  background: #f8fafc;
+}
+.form-control:focus { border-color: var(--primary); background: white; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none !important;
+}
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+.btn-success { background: var(--success); color: white; }
+.btn-danger { background: var(--danger); color: white; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+.btn-outline:hover { background: var(--bg-main); }
+.btn-sm { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+
+.room-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 2rem;
+}
+.room-card {
+  background: white;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+.room-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.room-image { height: 210px; width: 100%; object-fit: cover; background: #e2e8f0; }
+.room-content { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; }
+.room-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; }
+.room-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; flex: 1; }
+.room-amenities { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.25rem; }
+.amenity-tag {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 20px;
+}
+.room-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+}
+.room-price { font-size: 1.35rem; font-weight: 800; color: var(--primary); }
+.room-price span { font-size: 0.85rem; font-weight: 400; color: var(--text-muted); }
+
+.card {
+  background: white;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 1.75rem;
+  margin-bottom: 1.75rem;
+}
+
+.table-responsive { width: 100%; overflow-x: auto; }
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.95rem;
+}
+.table th, .table td { padding: 1rem 0.75rem; border-bottom: 1px solid var(--border); }
+.table th { background: #f8fafc; font-weight: 700; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; }
+.table tr:hover { background: #f8fafc; }
+
+.badge {
+  display: inline-block;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+.badge-pending { background: #fef3c7; color: #b45309; }
+.badge-confirmed { background: #dbeafe; color: #1d4ed8; }
+.badge-checked_in, .badge-occupied { background: #dcfce7; color: #15803d; }
+.badge-checked_out, .badge-available { background: #f1f5f9; color: #475569; }
+.badge-cancelled, .badge-maintenance { background: #fee2e2; color: #b91c1c; }
+.badge-cleaning { background: #ffedd5; color: #c2410c; }
+
+.alert {
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+.alert-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+.alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.kpi-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+}
+.kpi-label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; }
+.kpi-value { font-size: 2rem; font-weight: 800; color: var(--secondary); }
+.kpi-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+/* SVG / CSS Bar Chart */
+.chart-container {
+  display: flex;
+  align-items: flex-end;
+  height: 200px;
+  gap: 1.5rem;
+  padding-top: 2rem;
+  border-bottom: 2px solid var(--border);
+}
+.chart-bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+}
+.chart-bar {
+  width: 100%;
+  max-width: 48px;
+  background: var(--primary);
+  border-radius: 6px 6px 0 0;
+  transition: height 0.5s ease;
+  min-height: 4px;
+}
+.chart-bar-label { margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+
+/* Invoice Print Mode */
+@media print {
+  .navbar, .btn, .no-print { display: none !important; }
+  body { background: white; color: black; }
+  .container { max-width: 100%; padding: 0; }
+  .card { box-shadow: none; border: 1px solid #ccc; }
+}
+
+footer {
+  background: #ffffff;
+  border-top: 1px solid var(--border);
+  padding: 1.5rem 2rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-top: auto;
+}

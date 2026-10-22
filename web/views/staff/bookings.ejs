@@ -1,0 +1,90 @@
+<%- include('../partials/header') %>
+<h2 style="margin-bottom: 1.5rem; font-weight: 800;">Nghiệp Vụ Lễ Tân - Danh Sách Đặt Phòng</h2>
+
+<% if (success) { %><div class="alert alert-success"><%= success %></div><% } %>
+<% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
+
+<form action="/staff/bookings" method="GET" class="card" style="padding: 1.25rem; margin-bottom: 2rem;">
+  <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: end;">
+    <div class="form-group">
+      <label>Lọc Trạng Thái</label>
+      <select name="status" class="form-control">
+        <option value="">Tất cả trạng thái</option>
+        <option value="pending" <%= filters.status === 'pending' ? 'selected' : '' %>>Chờ Xác Nhận (Pending)</option>
+        <option value="confirmed" <%= filters.status === 'confirmed' ? 'selected' : '' %>>Đã Xác Nhận (Confirmed)</option>
+        <option value="checked_in" <%= filters.status === 'checked_in' ? 'selected' : '' %>>Đang Lưu Trú (Checked-in)</option>
+        <option value="checked_out" <%= filters.status === 'checked_out' ? 'selected' : '' %>>Đã Trả Phòng (Checked-out)</option>
+        <option value="cancelled" <%= filters.status === 'cancelled' ? 'selected' : '' %>>Đã Hủy (Cancelled)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Ngày Kiểm Tra</label>
+      <input type="date" name="date" value="<%= filters.date %>" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-primary">Áp Dụng Lọc</button>
+  </div>
+</form>
+
+<div class="card" style="padding: 0; overflow: hidden; margin-bottom: 2.5rem;">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Mã Đơn</th>
+          <th>Khách Hàng</th>
+          <th>SĐT</th>
+          <th>Phòng</th>
+          <th>Lịch Trình</th>
+          <th>Trạng Thái</th>
+          <th>Thao Tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% bookings.forEach(b => { %>
+          <tr>
+            <td><strong><%= b.booking_code %></strong></td>
+            <td><%= b.customer_name %></td>
+            <td><%= b.customer_phone || '-' %></td>
+            <td>Phòng <%= b.room_number %> (<%= b.room_type_name %>)</td>
+            <td><%= new Date(b.check_in_date).toLocaleDateString('vi-VN') %> &rarr; <%= new Date(b.check_out_date).toLocaleDateString('vi-VN') %></td>
+            <td><span class="badge badge-<%= b.status %>"><%= b.status %></span></td>
+            <td style="display: flex; gap: 0.5rem;">
+              <a href="/staff/bookings/<%= b.id %>/details" class="btn btn-outline btn-sm">Chi Tiết / Dịch Vụ</a>
+              <% if (b.status === 'pending') { %>
+                <form action="/staff/bookings/<%= b.id %>/confirm" method="POST">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <button type="submit" class="btn btn-success btn-sm">Xác Nhận</button>
+                </form>
+              <% } %>
+              <% if (b.status === 'confirmed' || b.status === 'pending') { %>
+                <form action="/staff/bookings/<%= b.id %>/checkin" method="POST">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <button type="submit" class="btn btn-primary btn-sm">Check-in</button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h3 style="margin-bottom: 1rem; font-weight: 700;">Trạng Thái 20 Phòng Thực Tế & Đánh Dấu Dọn Phòng</h3>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+  <% rooms.forEach(r => { %>
+    <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 1rem; text-align: center;">
+      <div style="font-size: 1.25rem; font-weight: 800;">Phòng <%= r.room_number %></div>
+      <div style="font-size: 0.8rem; color: var(--text-muted);"><%= r.room_type_name %> (Tầng <%= r.floor %>)</div>
+      <div style="margin: 0.5rem 0;"><span class="badge badge-<%= r.status %>"><%= r.status %></span></div>
+      <% if (r.status === 'cleaning') { %>
+        <form action="/staff/rooms/cleaned" method="POST">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <input type="hidden" name="roomId" value="<%= r.id %>">
+          <button type="submit" class="btn btn-success btn-sm" style="width: 100%;">Đã Dọn Xong</button>
+        </form>
+      <% } %>
+    </div>
+  <% }) %>
+</div>
+<%- include('../partials/footer') %>

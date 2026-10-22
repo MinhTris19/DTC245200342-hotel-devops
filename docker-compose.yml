@@ -1,0 +1,79 @@
+name: hotel
+
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: hotel-nginx
+    restart: unless-stopped
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+
+  db:
+    image: postgres:16-alpine
+    container_name: hotel-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-hotel}
+      POSTGRES_USER: ${POSTGRES_USER:-hotel_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-hotel_app} -d ${POSTGRES_DB:-hotel}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: hotel-web
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgres://${POSTGRES_USER:-hotel_app}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-hotel}
+      SESSION_SECRET: ${SESSION_SECRET}
+      NODE_ENV: production
+      COOKIE_SECURE: "true"
+    volumes:
+      - web_uploads:/app/public/uploads
+    # Ports 3000 removed - only accessible via Nginx reverse proxy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/health | grep OK || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:8.14
+    container_name: hotel-pgadmin
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@hotel.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      SCRIPT_NAME: /pgadmin
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    # Port 5050 removed - only accessible via Nginx reverse proxy /pgadmin/
+
+volumes:
+  db_data:
+    name: hotel_db_data
+  web_uploads:
+    name: hotel_web_uploads
+  pgadmin_data:
+    name: hotel_pgadmin_data

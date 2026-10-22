@@ -1,0 +1,94 @@
+<%- include('../partials/header') %>
+<div class="card" style="max-width: 800px; margin: 2rem auto; padding: 3rem;">
+  <div style="display: flex; justify-content: space-between; align-items: start; border-bottom: 2px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem;">
+    <div>
+      <h1 style="font-size: 1.75rem; color: var(--primary);">HÓA ĐƠN THANH TOÁN</h1>
+      <p style="color: var(--text-muted);">Khách Sạn Ánh Dương - Đà Nẵng, Việt Nam</p>
+      <p style="color: var(--text-muted); font-size: 0.85rem;">Hotline: 1900 6868 | Email: contact@anhduonghotel.com</p>
+    </div>
+    <div style="text-align: right;">
+      <h3 style="color: var(--secondary);">MÃ: <%= booking.booking_code %></h3>
+      <p style="color: var(--text-muted);">Ngày lập: <%= new Date().toLocaleDateString('vi-VN') %></p>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+    <div>
+      <h4 style="margin-bottom: 0.5rem; text-transform: uppercase; color: var(--text-muted); font-size: 0.85rem;">Thông Tin Khách Hàng</h4>
+      <p><strong><%= booking.full_name %></strong></p>
+      <p>SĐT: <%= booking.phone || '-' %></p>
+      <p>Email: <%= booking.email %></p>
+    </div>
+    <div>
+      <h4 style="margin-bottom: 0.5rem; text-transform: uppercase; color: var(--text-muted); font-size: 0.85rem;">Chi Tiết Lưu Trú</h4>
+      <p>Phòng: <strong><%= booking.room_number %> - <%= booking.room_type_name %></strong></p>
+      <p>Nhận: <%= new Date(booking.check_in_date).toLocaleDateString('vi-VN') %> | Trả: <%= new Date(booking.check_out_date).toLocaleDateString('vi-VN') %></p>
+      <p>Thời gian lưu trú: <strong><%= booking.nights %> đêm</strong></p>
+    </div>
+  </div>
+
+  <table class="table" style="margin-bottom: 2rem;">
+    <thead>
+      <tr>
+        <th>Khoản Mục</th>
+        <th>Số Lượng / Thời Gian</th>
+        <th>Đơn Giá</th>
+        <th style="text-align: right;">Thành Tiền</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Tiền Phòng (<%= booking.room_type_name %>)</td>
+        <td><%= booking.nights %> đêm</td>
+        <td><%= Number(booking.price_per_night).toLocaleString('vi-VN') %> đ</td>
+        <td style="text-align: right;"><strong><%= Number(booking.total_amount).toLocaleString('vi-VN') %> đ</strong></td>
+      </tr>
+      <% services.forEach(s => { %>
+        <tr>
+          <td><%= s.name %></td>
+          <td><%= s.quantity %></td>
+          <td><%= Number(s.unit_price).toLocaleString('vi-VN') %> đ</td>
+          <td style="text-align: right;"><%= Number(s.quantity * s.unit_price).toLocaleString('vi-VN') %> đ</td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <% if (payment) { %>
+    <div style="background: var(--bg-main); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+        <span>Tổng thanh toán:</span>
+        <strong style="font-size: 1.25rem; color: var(--primary);"><%= Number(payment.amount_due).toLocaleString('vi-VN') %> đ</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+        <span>Hình thức thanh toán:</span>
+        <strong style="text-transform: uppercase;"><%= payment.method %></strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+        <span>Tiền khách đưa:</span>
+        <span><%= Number(payment.amount_paid).toLocaleString('vi-VN') %> đ</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Tiền thừa trả khách:</span>
+        <span><%= Number(payment.change_amount).toLocaleString('vi-VN') %> đ</span>
+      </div>
+    </div>
+  <% } %>
+
+  <div style="display: flex; justify-content: space-between; margin-top: 3rem; text-align: center;">
+    <div>
+      <p style="font-weight: 700;">Khách Hàng</p>
+      <p style="font-size: 0.8rem; color: var(--text-muted);">(Ký & Ghi rõ họ tên)</p>
+    </div>
+    <div>
+      <p style="font-weight: 700;">Nhân Viên Thu Ngân</p>
+      <p style="font-size: 0.8rem; color: var(--text-muted);">(Ký & Đóng dấu)</p>
+    </div>
+  </div>
+
+  <div class="no-print" style="margin-top: 3rem; text-align: center;">
+    <button onclick="window.print()" class="btn btn-primary" style="padding: 0.8rem 2rem;">In Hóa Đơn Này</button>
+    <a href="/staff/bookings" class="btn btn-outline" style="margin-left: 1rem;">Quay Lại Danh Sách</a>
+  </div>
+</div>
+<%- include('../partials/footer') %>

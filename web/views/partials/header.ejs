@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | Khách Sạn Ánh Dương</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <a href="/" class="brand">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 21h18M3 7v14M21 7v14M6 3h12l3 4H3l3-4zM9 10v2M15 10v2M9 16v2M15 16v2"/></svg>
+      Ánh Dương <span>Hotel</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/rooms">Danh Sách Phòng</a></li>
+      <li><a href="/search">Tìm Phòng Trống</a></li>
+      <% if (typeof user !== 'undefined' && user) { %>
+        <% if (user.role === 'customer') { %>
+          <li><a href="/bookings">Đặt Phòng Của Tôi</a></li>
+        <% } %>
+        <% if (user.role === 'staff' || user.role === 'manager') { %>
+          <li><a href="/staff/bookings">Nghiệp Vụ Lễ Tân</a></li>
+        <% } %>
+        <% if (user.role === 'manager') { %>
+          <li><a href="/manager/dashboard">Dashboard KPI</a></li>
+          <li><a href="/manager/room-types">Loại Phòng</a></li>
+          <li><a href="/manager/rooms">Phòng</a></li>
+          <li><a href="/manager/staff">Nhân Viên</a></li>
+        <% } %>
+        <li><span class="role-badge"><%= user.role %></span></li>
+        <li><a href="/logout" class="btn btn-outline btn-sm">Đăng Xuất (<%= user.username %>)</a></li>
+      <% } else { %>
+        <li><a href="/login" class="btn btn-outline btn-sm">Đăng Nhập</a></li>
+        <li><a href="/register" class="btn btn-primary btn-sm">Đăng Ký</a></li>
+      <% } %>
+    </ul>
+  </nav>
+  <main class="container">

@@ -1,0 +1,49 @@
+<%- include('../partials/header') %>
+<div class="card" style="max-width: 600px; margin: 2rem auto; padding: 2.5rem;">
+  <h2 style="margin-bottom: 0.5rem;">Xác Nhận Đặt Phòng</h2>
+  <p style="color: var(--text-muted); margin-bottom: 1.5rem;"><%= roomType.name %></p>
+
+  <% if (error) { %>
+    <div class="alert alert-danger"><%= error %></div>
+  <% } %>
+
+  <form action="/bookings/create" method="POST">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <input type="hidden" name="room_type_id" value="<%= roomType.id %>">
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+      <div class="form-group">
+        <label for="check_in">Ngày Nhận Phòng</label>
+        <input type="date" id="check_in" name="check_in" value="<%= check_in %>" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="check_out">Ngày Trả Phòng</label>
+        <input type="date" id="check_out" name="check_out" value="<%= check_out %>" class="form-control" required>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 1rem;">
+      <label for="guests">Số Khách (Tối đa <%= roomType.capacity %> người)</label>
+      <input type="number" id="guests" name="guests" value="<%= guests %>" min="1" max="<%= roomType.capacity %>" class="form-control" required>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 1.5rem;">
+      <label for="note">Ghi Chú Đặc Biệt</label>
+      <textarea id="note" name="note" class="form-control" rows="3" placeholder="Yêu cầu tầng cao, giường đôi, nhận phòng muộn..."></textarea>
+    </div>
+
+    <div style="background: var(--bg-main); padding: 1.25rem; border-radius: 8px; margin-bottom: 1.5rem;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+        <span>Giá niêm yết:</span>
+        <strong><%= Number(roomType.base_price).toLocaleString('vi-VN') %> đ / đêm</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.85rem;">
+        <span>Chính sách:</span>
+        <span>Thanh toán khi nhận phòng, hủy miễn phí trước 24h</span>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="width: 100%;">Tiến Hành Đặt Phòng</button>
+  </form>
+</div>
+<%- include('../partials/footer') %>

@@ -1,0 +1,67 @@
+<%- include('../partials/header') %>
+<h2 style="margin-bottom: 1.5rem; font-weight: 800;">Kết Quả Tìm Kiếm Phòng Trống</h2>
+
+<form action="/search" method="GET" class="card" style="padding: 1.25rem; margin-bottom: 2rem;">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) auto; gap: 1rem; align-items: end;">
+    <div class="form-group">
+      <label>Ngày Nhận</label>
+      <input type="date" name="check_in" value="<%= query.check_in || '' %>" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <label>Ngày Trả</label>
+      <input type="date" name="check_out" value="<%= query.check_out || '' %>" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <label>Số Khách</label>
+      <select name="guests" class="form-control">
+        <option value="1" <%= query.guests == '1' ? 'selected' : '' %>>1 Người</option>
+        <option value="2" <%= query.guests == '2' || !query.guests ? 'selected' : '' %>>2 Người</option>
+        <option value="3" <%= query.guests == '3' ? 'selected' : '' %>>3 Người</option>
+        <option value="4" <%= query.guests == '4' ? 'selected' : '' %>>4 Người</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Sắp Xếp Giá</label>
+      <select name="sort" class="form-control">
+        <option value="price_asc" <%= query.sort == 'price_asc' ? 'selected' : '' %>>Giá tăng dần</option>
+        <option value="price_desc" <%= query.sort == 'price_desc' ? 'selected' : '' %>>Giá giảm dần</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Lọc Lại</button>
+  </div>
+</form>
+
+<% if (results.length === 0) { %>
+  <div class="card" style="text-align: center; padding: 3rem;">
+    <h3>Không Tìm Thấy Phòng Trống Phù Hợp</h3>
+    <p style="color: var(--text-muted); margin-top: 0.5rem;">Vui lòng thử chọn khoảng ngày khác hoặc giảm số lượng khách.</p>
+    <a href="/rooms" class="btn btn-outline" style="margin-top: 1.5rem;">Xem Tất Cả Loại Phòng</a>
+  </div>
+<% } else { %>
+  <div class="room-grid">
+    <% results.forEach(rt => { %>
+      <div class="room-card">
+        <img src="<%= rt.image_path %>" alt="<%= rt.name %>" class="room-image">
+        <div class="room-content">
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <h3 class="room-title"><%= rt.name %></h3>
+            <span class="badge badge-occupied" style="font-size: 0.75rem;">Còn <%= rt.available_rooms %> phòng trống</span>
+          </div>
+          <p class="room-desc"><%= rt.description %></p>
+          <div class="room-amenities">
+            <% (rt.amenities || '').split(',').forEach(a => { %>
+              <span class="amenity-tag"><%= a.trim() %></span>
+            <% }) %>
+          </div>
+          <div class="room-footer">
+            <div class="room-price">
+              <%= Number(rt.base_price).toLocaleString('vi-VN') %> đ<span>/đêm</span>
+            </div>
+            <a href="/bookings/create?room_type_id=<%= rt.id %>&check_in=<%= query.check_in %>&check_out=<%= query.check_out %>&guests=<%= query.guests %>" class="btn btn-primary btn-sm">Đặt Ngay</a>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+<% } %>
+<%- include('../partials/footer') %>

@@ -1,0 +1,79 @@
+<%- include('../partials/header') %>
+<h2 style="margin-bottom: 1.5rem; font-weight: 800;">Quản Lý Tài Khoản Nhân Viên</h2>
+
+<% if (success) { %><div class="alert alert-success"><%= success %></div><% } %>
+<% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+  <div class="card" style="padding: 0; overflow: hidden;">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Họ Tên</th>
+          <th>Vai Trò</th>
+          <th>Trạng Thái</th>
+          <th>Hành Động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% staffList.forEach(s => { %>
+          <tr>
+            <td><strong><%= s.username %></strong></td>
+            <td><%= s.full_name %></td>
+            <td><span class="role-badge"><%= s.role %></span></td>
+            <td><span class="badge badge-<%= s.is_active ? 'available' : 'cancelled' %>"><%= s.is_active ? 'Hoạt động' : 'Đã khóa' %></span></td>
+            <td>
+              <% if (s.id !== currentUserId) { %>
+                <form action="/manager/staff/<%= s.id %>/toggle-lock" method="POST">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <button type="submit" class="btn btn-<%= s.is_active ? 'danger' : 'success' %> btn-sm">
+                    <%= s.is_active ? 'Khóa' : 'Mở Khóa' %>
+                  </button>
+                </form>
+              <% } else { %>
+                <span style="color: var(--text-muted); font-size: 0.85rem;">(Chính bạn)</span>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom: 1rem;">Tạo Nhân Viên Mới</h3>
+    <form action="/manager/staff" method="POST">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label>Tên Đăng Nhập</label>
+        <input type="text" name="username" class="form-control" required placeholder="letan03">
+      </div>
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label>Email</label>
+        <input type="email" name="email" class="form-control" required placeholder="letan03@hotel.local">
+      </div>
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label>Họ và Tên</label>
+        <input type="text" name="full_name" class="form-control" required placeholder="Lê Văn E">
+      </div>
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label>Số Điện Thoại</label>
+        <input type="text" name="phone" class="form-control" placeholder="0987654321">
+      </div>
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label>Vai Trò</label>
+        <select name="role" class="form-control" required>
+          <option value="staff" selected>Lễ Tân (Staff)</option>
+          <option value="manager">Quản Lý (Manager)</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label>Mật Khẩu Ban Đầu</label>
+        <input type="password" name="password" class="form-control" required placeholder="Mật khẩu mạnh">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Tạo Tài Khoản</button>
+    </form>
+  </div>
+</div>
+<%- include('../partials/footer') %>
