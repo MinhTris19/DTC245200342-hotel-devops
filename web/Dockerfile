@@ -8,6 +8,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=builder /app/node_modules ./node_modules
 COPY . .
-RUN mkdir -p /app/public/uploads && chmod -R 777 /app/public/uploads
+RUN mkdir -p /app/public/uploads && chown -R node:node /app
+USER node
 EXPOSE 3000
 CMD ["node", "src/app.js"]

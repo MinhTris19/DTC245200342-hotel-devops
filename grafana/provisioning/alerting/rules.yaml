@@ -1,0 +1,58 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: 'Hotel Security Alerts'
+    folder: 'Hotel Monitoring'
+    interval: 10s
+    rules:
+      - uid: hotel_bruteforce_login
+        title: 'Hotel - Brute force login'
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: loki
+            model:
+              editorMode: code
+              expr: 'sum(count_over_time({job="webapp"} |= "LOGIN_FAILED" [1m]))'
+              instant: true
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 5
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                name: Expression
+                type: __expr__
+                uid: __expr__
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        for: 0s
+        labels:
+          severity: critical
+        annotations:
+          summary: 'Phat hien tan cong brute force dang nhap (> 5 lan that bai/phut)'
+          description: 'Phat hien nhieu lan dang nhap that bai (LOGIN_FAILED) lien tiep. Can kiem tra dia chi IP truy cap va tai khoan muc tieu.'
