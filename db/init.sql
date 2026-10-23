@@ -183,3 +183,45 @@ SELECT b.id, s.id, 1, s.price
 FROM bookings b, services s
 WHERE b.booking_code = 'BK-TODAY-02' AND s.name = 'Đưa Đón Sân Bay 2 Chiều'
 ON CONFLICT DO NOTHING;
+
+-- Exporter user for Prometheus postgres-exporter
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'exporter') THEN
+    CREATE USER exporter WITH PASSWORD '9jPjCcsF0wthmP2e09cfy3AA';
+  ELSE
+    ALTER USER exporter WITH PASSWORD '9jPjCcsF0wthmP2e09cfy3AA';
+  END IF;
+END
+$$;
+GRANT pg_monitor TO exporter;
+
+
+-- Exporter user for Prometheus postgres-exporter
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'exporter') THEN
+    CREATE USER exporter WITH PASSWORD 'EiUlMqzqTeohKtxsHNoe7sIF';
+  ELSE
+    ALTER USER exporter WITH PASSWORD 'EiUlMqzqTeohKtxsHNoe7sIF';
+  END IF;
+END
+$$;
+GRANT pg_monitor TO exporter;
+
+
+-- Exporter user for Prometheus postgres-exporter
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'exporter') THEN
+    CREATE USER exporter WITH PASSWORD 'hNAGWEGnn5yjpRliE0heapoA';
+  ELSE
+    ALTER USER exporter WITH PASSWORD 'hNAGWEGnn5yjpRliE0heapoA';
+  END IF;
+END
+$$;
+GRANT pg_monitor TO exporter;
+

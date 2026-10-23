@@ -42,3 +42,27 @@ Chạy script sinh chứng chỉ trước khi khởi động Nginx:
 ./nginx/gen-cert.sh
 ```
 Chứng chỉ được tạo với RSA 2048 bit, thời hạn 365 ngày, bao gồm SAN: IP:192.168.1.6, IP:127.0.0.1, DNS:localhost.
+
+## 4. Cấu hình Giám Sát (Prometheus + Grafana + Exporters)
+### Khởi tạo tài khoản giám sát PostgreSQL Exporter
+Đối với trường hợp volume PostgreSQL đã tồn tại từ trước (khi init.sql không tự chạy lại), thực thi lệnh sau để cấp quyền tối thiểu an toàn cho xporter:
+\\\ash
+docker exec -i hotel-db psql -U hotel_app -d hotel << 'EOSQL'
+DO \$\$
+BEGIN
+  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'exporter') THEN
+    CREATE USER exporter WITH PASSWORD 'EXPORTER_PASSWORD_FROM_ENV';
+  END IF;
+  GRANT pg_monitor TO exporter;
+END
+\$\$;
+EOSQL
+\\\
+
+### Truy cập hệ thống giám sát
+- **Grafana URL:** https://192.168.1.6/grafana/
+- **Prometheus UI (qua SSH Tunnel an toàn - không publish port):**
+  \\\ash
+  ssh -i ~/.ssh/id_hotel -L 9090:localhost:9090 minhtri@192.168.1.6
+  \\\
+  Sau đó mở trình duyệt máy host truy cập: http://localhost:9090/targets
